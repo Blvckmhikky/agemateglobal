@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Track Shipment - AGE-MATE Global Logistics</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="index.html" class="brand"><img src="assets/logo.svg" alt="AGE-MATE"></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="contact.html">Contact</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Track Your Shipment</h1>
+
+    <form id="trackForm">
+      <label for="tracking">Tracking Number</label>
+      <input id="tracking" name="tracking" type="text" placeholder="Enter tracking number" required>
+      <button type="submit">Check Status</button>
+    </form>
+
+    <section id="result" class="hidden">
+      <h2>Shipment Details</h2>
+      <div id="details"></div>
+      <div id="downloads" class="downloads"></div>
+    </section>
+
+    <div id="error" class="error hidden"></div>
+  </main>
+
+  <script>
+    async function renderShipment(data) {
+      const details = document.getElementById('details');
+      details.innerHTML = `
+        <p><strong>Status:</strong> ${data.status}</p>
+        <p><strong>Origin:</strong> ${data.origin}</p>
+        <p><strong>Destination:</strong> ${data.destination}</p>
+        <h3>Receipt</h3>
+        <table class="receipt-table">
+          <tr><th>User Name</th><td>${data.userName}</td></tr>
+          <tr><th>Loading Date</th><td>${data.loadingDate}</td></tr>
+          <tr><th>Phone Number</th><td>${data.phone}</td></tr>
+          <tr><th>Tracking Number</th><td>${data.trackingNumber}</td></tr>
+          <tr><th>Goods Description</th><td>${data.goodsDescription}</td></tr>
+          <tr><th>Quantity</th><td>${data.quantity}</td></tr>
+          <tr><th>CBM</th><td>${data.cbm}</td></tr>
+          <tr><th>Rate per CBM</th><td>${data.ratePerCbm}</td></tr>
+          <tr><th>Total Amount</th><td>${data.totalAmount}</td></tr>
+          <tr><th>Container Number</th><td>${data.containerNumber}</td></tr>
+        </table>
+      `;
+
+      const downloads = document.getElementById('downloads');
+      downloads.innerHTML = '' ;
+      const pdfLink = document.createElement('a');
+      pdfLink.textContent = 'Download PDF Receipt';
+      pdfLink.href = `/api/receipt/${encodeURIComponent(data.trackingNumber)}/pdf` ;
+      pdfLink.setAttribute('download', `${data.trackingNumber}-receipt.pdf`);
+
+      const jpgLink = document.createElement('a');
+      jpgLink.textContent = 'Download JPEG Receipt';
+      jpgLink.href = `/api/receipt/${encodeURIComponent(data.trackingNumber)}/jpeg` ;
+      jpgLink.setAttribute('download', `${data.trackingNumber}-receipt.jpg`);
+
+      downloads.appendChild(pdfLink);
+      downloads.appendChild(document.createTextNode(' '));
+      downloads.appendChild(jpgLink);
+    }
+
+    document.getElementById('trackForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const tracking = document.getElementById('tracking').value.trim();
+      document.getElementById('error').classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tracking })
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.message || 'Shipment not found');
+        }
+        const data = await res.json();
+        document.getElementById('result').classList.remove('hidden');
+        await renderShipment(data);
+      } catch (err) {
+        const errorEl = document.getElementById('error');
+        errorEl.textContent = err.message || 'Unknown error';
+        errorEl.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

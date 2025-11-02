@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact - AGE-MATE Global Logistics</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="index.html" class="brand"><img src="assets/logo.svg" alt="AGE-MATE"></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="tracking.html">Tracking</a>
+      <a href="services.html">Services</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Contact Us</h1>
+    <p>For quotes or enquiries, use the form below or contact our offices directly.</p>
+    <form id="contactForm">
+      <label>Name<input type="text" name="name" required></label>
+      <label>Email<input type="email" name="email" required></label>
+      <label>Phone<input type="text" name="phone"></label>
+      <label>Message<textarea name="message" rows="4"></textarea></label>
+      <button type="submit">Send</button>
+    </form>
+
+    <section class="offices">
+      <h2>Our Offices</h2>
+      <p><strong>China Office</strong>: 123 Logistics Way, Shanghai</p>
+      <p><strong>Nigeria Office</strong>: 45 Lagos Ave, Lagos</p>
+      <p>Email: contact@agemateglobal.com | Phone: +1-555-0100</p>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Thank you — your message was submitted (demo only).');
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
